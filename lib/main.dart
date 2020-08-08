@@ -1,48 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-//test 
+
+import 'ChooseDates.dart';
+//test
 void main() {
   runApp(HomeScreen());
-}
-
-Widget _buildCalender(String text) {
-  return Padding(
-    padding: const EdgeInsets.all(20.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          text,
-          style: TextStyle(fontSize: 20),
-        ),
-        Container(
-          margin: EdgeInsets.only(top: 8),
-          height: 50,
-          decoration:
-          BoxDecoration(border: Border.all(color: Colors.deepOrangeAccent)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "10-4-2017",
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.calendar_today,
-                  color: Colors.deepOrangeAccent,
-                ),
-              )
-            ],
-          ),
-        )
-      ],
-    ),
-  );
 }
 
 Widget _buildButton(String text) {
@@ -138,9 +100,9 @@ class HomeScreen extends StatelessWidget {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(top: 20),
-                        child: _buildCalender("Date Of Birth"),
+                        child: StatefulCalendar("Date Of Birth"),
                       ),
-                      _buildCalender("Today's Date "),
+                      StatefulCalendar("Today's Date "),
                       _buildButtons("clear", "calculate"),
                       _buildAge("Age is"),
                       _buildAge("Next Birthday in "),
