@@ -32,6 +32,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+
   DateTime dateOfBirth = DateTime.now();
   DateTime dateOfToday = DateTime.now();
 
@@ -39,6 +40,16 @@ class HomeScreenState extends State<HomeScreen> {
   TextEditingController _dateOfTodayController = TextEditingController();
 
   AgeDuration age;
+  AgeDuration nextBirthday;
+
+  TextEditingController _ageYearcontroller = TextEditingController();
+  TextEditingController _ageMonthcontroller = TextEditingController();
+  TextEditingController _ageDaycontroller = TextEditingController();
+
+  TextEditingController _leftYearcontroller = TextEditingController();
+  TextEditingController _leftMonthcontroller = TextEditingController();
+  TextEditingController _leftDaycontroller = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +70,7 @@ class HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Date of birth"),
+          Text("Date of birth", style: TextStyle(fontSize: 20)),
           Container(
             margin: EdgeInsets.only(top: 8),
             height: 50,
@@ -69,7 +80,7 @@ class HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: TextField(
+                  child: TextField( style: TextStyle(fontSize: 18),
                     controller: _dateOfBirthController,
                     enabled: false,
                   ),
@@ -105,7 +116,7 @@ class HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Date of today"),
+          Text("Date of today", style: TextStyle(fontSize: 18)),
           Container(
             margin: EdgeInsets.only(top: 8),
             height: 50,
@@ -115,7 +126,7 @@ class HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: TextField(
+                  child: TextField( style: TextStyle(fontSize: 20),
                     controller: _dateOfTodayController,
                     enabled: false,
                   ),
@@ -164,7 +175,7 @@ class HomeScreenState extends State<HomeScreen> {
       _clear();
     });
     Widget _calcButton = _buildButton("calculate", () {
-      _calcAge();
+      _calculate();
     });
 
     return Padding(
@@ -187,15 +198,40 @@ class HomeScreenState extends State<HomeScreen> {
           color: Colors.deepOrangeAccent,
           onPressed: _onPressed,
           child: Text(title.toUpperCase(),
-              style: TextStyle(color: Colors.white, fontSize: 15))),
+              style: TextStyle(color: Colors.white, fontSize: 18))),
     );
   }
 
+  void _calculate(){
+    _calcAge();
+    _calcNextBD();
+  }
+
   void _calcAge() {
+
     setState(() {
       age = Age.dateDifference(fromDate: dateOfBirth, toDate: dateOfToday);
+      _ageYearcontroller.text=age.years.toString();
+      _ageMonthcontroller.text=age.months.toString();
+      _ageDaycontroller.text=age.days.toString();
     });
     print(age);
+  }
+
+  void _calcNextBD(){
+
+    DateTime tempDate = DateTime(dateOfToday.year, dateOfBirth.month, dateOfBirth.day);
+    DateTime nextBirthdayDate = tempDate.isBefore(dateOfToday)
+        ? Age.add(date: tempDate, duration: AgeDuration(years: 1))
+        : tempDate;
+
+    setState(() {
+      AgeDuration nextBirthday =
+      Age.dateDifference(fromDate: dateOfToday, toDate: nextBirthdayDate);
+      _leftYearcontroller.text=nextBirthday.years.toString();
+      _leftMonthcontroller.text=nextBirthday.months.toString();
+      _leftDaycontroller.text=nextBirthday.days.toString();
+    });
   }
 
   void _clear() {
@@ -205,16 +241,17 @@ class HomeScreenState extends State<HomeScreen> {
       dateOfToday=DateTime.now();
       _dateOfTodayController.text =
           _getFormattedDate(dateOfToday);
-
       dateOfBirth=DateTime.now();
       _dateOfBirthController.text =
           _getFormattedDate(dateOfBirth);
 
+      _calculate();
+      //TODO Clear Years=0
+
     });
-    print(age);
   }
 
-  Widget _buildOutputBox(String title) {
+  Widget _buildOutputBox(String title, TextEditingController control) {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,7 +263,7 @@ class HomeScreenState extends State<HomeScreen> {
             child: Center(
                 child: Text(
               title,
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              style: TextStyle(color: Colors.white, fontSize: 18),
             )),
             color: Colors.deepOrangeAccent,
           ),
@@ -235,6 +272,9 @@ class HomeScreenState extends State<HomeScreen> {
             width: 110,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.deepOrangeAccent)),
+            child: TextField(textAlign: TextAlign.center,
+              controller: control,
+            ),
           ),
         ],
       ),
@@ -242,9 +282,9 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildAgeRow() {
-    Widget Years = _buildOutputBox("Years");
-    Widget Months = _buildOutputBox("Months");
-    Widget Days = _buildOutputBox("Days");
+    Widget Years = _buildOutputBox("Years",_ageYearcontroller);
+    Widget Months = _buildOutputBox("Months",_ageMonthcontroller);
+    Widget Days = _buildOutputBox("Days",_ageDaycontroller);
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -252,7 +292,7 @@ class HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           Text(
             "Your age is ",
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 18),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -268,24 +308,24 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNextBDRow() {
-    Widget years = _buildOutputBox("Years");
-    Widget months = _buildOutputBox("Months");
-    Widget days = _buildOutputBox("Days");
+    Widget yearsleft = _buildOutputBox("Years",_leftYearcontroller);
+    Widget monthsleft = _buildOutputBox("Months",_leftMonthcontroller);
+    Widget daysleft = _buildOutputBox("Days",_leftDaycontroller);
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Your age is ",
+            "Next Birthday is in ",
             style: TextStyle(fontSize: 20),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              years,
-              months,
-              days,
+              yearsleft,
+              monthsleft,
+              daysleft,
             ],
           )
         ],
