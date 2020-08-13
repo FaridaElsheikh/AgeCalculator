@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:age/age.dart';
+import 'package:flutter_app/Calculator.dart';
 import 'package:intl/intl.dart';
 
 //test
@@ -50,6 +51,7 @@ class HomeScreenState extends State<HomeScreen> {
   TextEditingController _leftMonthcontroller = TextEditingController();
   TextEditingController _leftDaycontroller = TextEditingController();
 
+  Calculator calculator;
 
   @override
   Widget build(BuildContext context) {
@@ -203,14 +205,14 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void _calculate(){
-    _calcAge();
-    _calcNextBD();
+    _setAgeState();
+    _setNextBDState();
   }
 
-  void _calcAge() {
-
+  void _setAgeState() {
+  calculator=new Calculator(dateOfBirth, dateOfToday);
     setState(() {
-      age = Age.dateDifference(fromDate: dateOfBirth, toDate: dateOfToday);
+      age=calculator.calcAge();
       _ageYearcontroller.text=age.years.toString();
       _ageMonthcontroller.text=age.months.toString();
       _ageDaycontroller.text=age.days.toString();
@@ -218,16 +220,9 @@ class HomeScreenState extends State<HomeScreen> {
     print(age);
   }
 
-  void _calcNextBD(){
-
-    DateTime tempDate = DateTime(dateOfToday.year, dateOfBirth.month, dateOfBirth.day);
-    DateTime nextBirthdayDate = tempDate.isBefore(dateOfToday)
-        ? Age.add(date: tempDate, duration: AgeDuration(years: 1))
-        : tempDate;
-
+  void _setNextBDState(){
     setState(() {
-      AgeDuration nextBirthday =
-      Age.dateDifference(fromDate: dateOfToday, toDate: nextBirthdayDate);
+      nextBirthday=calculator.calcNextBD();
       _leftYearcontroller.text=nextBirthday.years.toString();
       _leftMonthcontroller.text=nextBirthday.months.toString();
       _leftDaycontroller.text=nextBirthday.days.toString();
@@ -236,7 +231,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   void _clear() {
     setState(() {
-      age=Age.dateDifference(fromDate: DateTime.now(), toDate: DateTime.now());
 
       dateOfToday=DateTime.now();
       _dateOfTodayController.text =
@@ -245,8 +239,15 @@ class HomeScreenState extends State<HomeScreen> {
       _dateOfBirthController.text =
           _getFormattedDate(dateOfBirth);
 
-      _calculate();
-      //TODO Clear Years=0
+      age=AgeDuration(years: 0,months: 0,days: 0);
+      _ageYearcontroller.text=age.years.toString();
+      _ageMonthcontroller.text=age.months.toString();
+      _ageDaycontroller.text=age.days.toString();
+
+      nextBirthday=AgeDuration(years: 0,months: 0,days: 0);
+      _leftYearcontroller.text=nextBirthday.years.toString();
+      _leftMonthcontroller.text=nextBirthday.months.toString();
+      _leftDaycontroller.text=nextBirthday.days.toString();
 
     });
   }
