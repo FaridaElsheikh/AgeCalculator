@@ -1,2 +1,2 @@
-![](screenshots/calculated)
-![](screenshots/clear)
+![](screenshots/calculated.png)
+![](screenshots/clear.png)
